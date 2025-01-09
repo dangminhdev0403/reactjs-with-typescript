@@ -1,39 +1,27 @@
-import { useState } from 'react';
-import './App.css';
-import reactLogo from './assets/react.svg';
-import MyFirstComponent from './component/my.component';
-import viteLogo from '/vite.svg';
+import "./App.css";
+import InputToDo from "./component/input.todo";
 
 function App() {
+  const name = "Dang Minh";
+  const age = 20;
+  const info = {
+    gennder: "male",
 
- 
-  const [count, setCount] = useState(0)
+    address: "Ha Noi",
+  };
 
+  const todos =["todo1","todo2","todo3","todo4","todo5","todo6"];
   return (
-    <>
-      <MyFirstComponent/>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Hello World</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <div className="parent">
+      <div className="child"></div>
+      <InputToDo name={name} age={age} info={info} minh={"minh"} />
+      <ul>
+       {todos.map((todo,index)=>{
+        return <li key={index}>{todo}</li>
+       })}
+      </ul>
+    </div>
+  );
 }
 
-export default App
+export default App;
