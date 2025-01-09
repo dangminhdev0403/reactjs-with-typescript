@@ -1,3 +1,4 @@
+import { useState } from "react";
 import "./App.css";
 import InputToDo from "./component/input.todo";
 
@@ -6,19 +7,33 @@ function App() {
   const age = 20;
   const info = {
     gennder: "male",
-
     address: "Ha Noi",
   };
 
-  const todos =["todo1","todo2","todo3","todo4","todo5","todo6"];
+  const handleTest = (name: string) => {};
+
+  const [listTodo, setListTodo] = useState([
+    "todo1",
+    "todo2",
+    "todo3",
+    "todo4",
+  ]);
   return (
     <div className="parent">
       <div className="child"></div>
-      <InputToDo name={name} age={age} info={info} minh={"minh"} />
+      <InputToDo
+        name={name}
+        age={age}
+        info={info}
+        minh={"minh"}
+        handleTest={handleTest}
+        listTodo={listTodo}
+        setListTodo={setListTodo}
+      />
       <ul>
-       {todos.map((todo,index)=>{
-        return <li key={index}>{todo}</li>
-       })}
+        {listTodo.map((item, index) => {
+          return <li key={index}>{item}</li>;
+        })}
       </ul>
     </div>
   );
