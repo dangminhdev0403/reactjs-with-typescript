@@ -1,6 +1,6 @@
 import { useState } from "react";
 import "./App.css";
-import InputToDo from "./component/input.todo";
+import InputToDo from "./components/input.todo";
 
 function App() {
   const name = "Dang Minh";
