@@ -15,8 +15,8 @@ export interface IUser {
   password: string;
   gender: string;
 }
-const access_token =
-  "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbkBnbWFpbC5jb20iLCJwZXJtaXNzaW9uIjpbIlJPTEVfQURNSU5fQ1JFQVRFIiwiUk9MRV9BRE1JTl9VUERBVEUiXSwiZXhwIjoxNzQ1MDk1ODExLCJpYXQiOjE3MzY0NTU4MTEsInVzZXIiOnsiaWQiOjEsIm5hbWUiOiJJJ20gc3VwZXIgYWRtaW4iLCJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSJ9fQ.FsebO4mxxFWV2W4WEhc7q_WC0RS0MXgGrx8kkKn2Isfk5fgshn4__YwLXBFozxOZi8Gu0nOd2xpBIO6mCZcRoA";
+const access_token = localStorage.getItem("access_token") as string;
+
 const UserTable = () => {
   const [listUsers, setListUsers] = useState([]);
   const [isCreateModelOpen, setIsCreateModelOpen] = useState(false);
@@ -24,21 +24,30 @@ const UserTable = () => {
 
   const [dataUpdate, setDataUpdate] = useState<null | IUser>(null);
 
+  const [meta, setMeta] = useState({
+    page: 1,
+    pageSize: 5,
+    totalPage: 0,
+    pages: 0,
+  });
   useEffect(() => {
-    console.log("check useEffect");
+    // console.log("check useEffect");
 
     getData();
   }, []);
 
   const getData = async () => {
-    const res = await fetch("http://127.0.0.1:8080/api/v1/users", {
-      method: "GET",
-      //fetch with beartoken
-      headers: {
-        Authorization: `Bearer ${access_token}`,
-        "Content-Type": "application/json",
-      },
-    });
+    const res = await fetch(
+      `http://127.0.0.1:8080/api/v1/users?page=${meta.page}&size=${meta.pageSize}`,
+      {
+        method: "GET",
+        //fetch with beartoken
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
     const d = await res.json();
     if (!d.data) {
@@ -48,9 +57,15 @@ const UserTable = () => {
       });
       return;
     }
-    console.log(d.data.result);
 
     setListUsers(d.data.result);
+    setMeta({
+      page: d.data.meta.page,
+      pageSize: d.data.meta.pageSize,
+      totalPage: d.data.meta.totalPage,
+      pages: d.data.meta.pages,
+    });
+
   };
 
   const confirm = async (user: IUser) => {
@@ -147,6 +162,39 @@ const UserTable = () => {
     },
   ];
 
+  const hanldeOnChange = async(page: number, pageSize: number) => {
+
+   // setMeta({ ...meta, page, pageSize });
+
+     const res = await fetch(
+       `http://127.0.0.1:8080/api/v1/users?page=${page}&size=${pageSize}`,
+       {
+         method: "GET",
+         //fetch with beartoken
+         headers: {
+           Authorization: `Bearer ${access_token}`,
+           "Content-Type": "application/json",
+         },
+       }
+     );
+
+     const d = await res.json();
+     if (!d.data) {
+       notification.error({
+         message: "Error",
+         description: JSON.stringify(d.message),
+       });
+       return;
+     }
+
+     setListUsers(d.data.result);
+     setMeta({
+       page: d.data.meta.page,
+       pageSize: d.data.meta.pageSize,
+       totalPage: d.data.meta.totalPage,
+       pages: d.data.meta.pages,
+     });
+  };
   return (
     <div>
       <div
@@ -168,7 +216,21 @@ const UserTable = () => {
           </Button>
         </div>
       </div>
-      <Table columns={colunms} dataSource={listUsers} rowKey={"id"} />
+      <Table
+        pagination={{
+          showSizeChanger:true,
+          onChange: (page: number, pageSize: number) =>
+            hanldeOnChange(page, pageSize),
+          current: meta.page,
+          pageSize: meta.pageSize,
+          total: meta.totalPage,
+          //show total with antd
+          showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}`,
+        }}
+        columns={colunms}
+        dataSource={listUsers}
+        rowKey={"id"}
+      />
       <CreateUserModel
         access_token={access_token}
         getData={getData}

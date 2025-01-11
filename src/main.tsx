@@ -1,9 +1,9 @@
-import { StrictMode, useState } from "react";
+import { StrictMode, useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 
 import { HomeOutlined, UserOutlined } from "@ant-design/icons";
 import type { MenuProps } from "antd";
-import { Menu } from "antd";
+import { Menu, notification } from "antd";
 import {
   createBrowserRouter,
   Link,
@@ -33,7 +33,7 @@ const Header = () => {
   const [current, setCurrent] = useState("home");
 
   const onClick: MenuProps["onClick"] = (e) => {
-    console.log("click ", e);
+  //  console.log("click ", e);
     setCurrent(e.key);
   };
 
@@ -48,6 +48,33 @@ const Header = () => {
 };
 
 const LayoutAdmin = () => {
+
+   const getData = async () => {
+     const res = await fetch("http://localhost:8080/api/v1/auth/login", {
+       method: "POST",
+       //fetch with beartoken
+       headers: {
+         "Content-Type": "application/json",
+       },
+       body: JSON.stringify({
+         username: "admin@gmail.com",
+         password: "123456",
+       }),
+     });
+
+     const d = await res.json();
+     if (d.data) {
+           localStorage.setItem("access_token", d.data.access_token);
+      
+      
+     }
+
+    
+   };
+
+  useEffect(() => {
+    getData();
+  }, []);
   return (
     <div>
       <Header />

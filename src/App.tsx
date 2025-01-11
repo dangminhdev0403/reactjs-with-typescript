@@ -1,8 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.scss";
 import InputToDo from "./components/input.todo";
 
 function App() {
+  
+
+
+
   const name = "Dang Minh";
   const age = 20;
   const info = {
