@@ -1,6 +1,5 @@
-import { useState } from "react";
 // import "../../styles/users.css";
-import { Input, Modal, notification } from "antd";
+import { Checkbox, Form, Input, Modal, notification } from "antd";
 
 interface IProps {
   access_token: string;
@@ -9,13 +8,20 @@ interface IProps {
   setIsCreateModelOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 const CreateUserModel = (props: IProps) => {
+  const [form] = Form.useForm();
+
   const { access_token, getData, isCreateModelOpen, setIsCreateModelOpen } =
     props;
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
 
-  const handleOk = async () => {
+  const hanldeCloseCreateModel = () => {
+    form.resetFields();
+    setIsCreateModelOpen(false);
+  };
+
+  const onFinish = async (values: any) => {
+    console.log("Success:", values);
+
+    const { name, email, password } = values;
     const data = {
       name,
       email,
@@ -25,7 +31,7 @@ const CreateUserModel = (props: IProps) => {
     const res = await fetch("http://127.0.0.1:8080/api/v1/users", {
       method: "POST",
       // send data
-      body: JSON.stringify({ ...data }),
+      body: JSON.stringify(data),
       //fetch with beartoken
       headers: {
         Authorization: `Bearer ${access_token}`,
@@ -49,40 +55,53 @@ const CreateUserModel = (props: IProps) => {
     }
   };
 
-  const hanldeCloseCreateModel = () => {
-    setIsCreateModelOpen(false);
-    setName("");
-    setEmail("");
-    setPassword("");
-  };
   return (
     <Modal
       title="Add  new User"
       open={isCreateModelOpen}
-      onOk={handleOk}
+      onOk={() => form.submit()}
       onCancel={() => {
         hanldeCloseCreateModel();
       }}
       maskClosable={false}
     >
-      <label htmlFor="name">Name:</label>
-      <Input
-        placeholder="Name"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-      />
-      <label htmlFor="email">Email:</label>
-      <Input
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
-      <label htmlFor="password">Password:</label>
-      <Input
-        placeholder="passsword"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
+      <Form
+        form={form}
+        layout="vertical"
+        name="basic"
+        onFinish={onFinish}
+        autoComplete="off"
+      >
+        <Form.Item
+          label="name"
+          name="name"
+          rules={[{ required: true, message: "Please input your name!" }]}
+        >
+          <Input />
+        </Form.Item>
+
+        <Form.Item
+          label="email"
+          name="email"
+          rules={[{ required: true, message: "Please input your email!" }]}
+        >
+          <Input />
+        </Form.Item>
+
+        <Form.Item
+          label="Password"
+          name="password"
+          rules={[{ required: true, message: "Please input your password!" }]}
+        >
+          <Input.Password />
+        </Form.Item>
+
+        <Form.Item name="remember" valuePropName="checked" label={null}>
+          <Checkbox>Remember me</Checkbox>
+        </Form.Item>
+      </Form>
+
+   
     </Modal>
   );
 };
