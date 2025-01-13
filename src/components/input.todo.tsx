@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 
 interface IProps {
   name: string;
@@ -11,6 +11,8 @@ interface IProps {
   handleTest: (name: string) => void;
   listTodo: string[];
   setListTodo: (listTodo: string[]) => void;
+
+  children :React.ReactNode
 }
 const InputToDo = (props: IProps) => {
   const { handleTest, listTodo, setListTodo } = props;
@@ -27,6 +29,8 @@ const InputToDo = (props: IProps) => {
   return (
     <div style={{ border: "1px solid red" }}>
       <h1>Add new todo</h1>
+      {props.children}
+      
       <input
         value={todo}
         type="text"

@@ -33,7 +33,9 @@ function App() {
         handleTest={handleTest}
         listTodo={listTodo}
         setListTodo={setListTodo}
-      />
+      >
+        <span>Hello</span>
+        </InputToDo>
       <ul>
         {listTodo.map((item, index) => {
           return <li key={index}>{item}</li>;

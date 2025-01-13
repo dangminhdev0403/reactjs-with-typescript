@@ -65,7 +65,6 @@ const UserTable = () => {
       totalPage: d.data.meta.totalPage,
       pages: d.data.meta.pages,
     });
-
   };
 
   const confirm = async (user: IUser) => {
@@ -162,38 +161,37 @@ const UserTable = () => {
     },
   ];
 
-  const hanldeOnChange = async(page: number, pageSize: number) => {
+  const hanldeOnChange = async (page: number, pageSize: number) => {
+    // setMeta({ ...meta, page, pageSize });
 
-   // setMeta({ ...meta, page, pageSize });
+    const res = await fetch(
+      `http://127.0.0.1:8080/api/v1/users?page=${page}&size=${pageSize}`,
+      {
+        method: "GET",
+        //fetch with beartoken
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
-     const res = await fetch(
-       `http://127.0.0.1:8080/api/v1/users?page=${page}&size=${pageSize}`,
-       {
-         method: "GET",
-         //fetch with beartoken
-         headers: {
-           Authorization: `Bearer ${access_token}`,
-           "Content-Type": "application/json",
-         },
-       }
-     );
+    const d = await res.json();
+    if (!d.data) {
+      notification.error({
+        message: "Error",
+        description: JSON.stringify(d.message),
+      });
+      return;
+    }
 
-     const d = await res.json();
-     if (!d.data) {
-       notification.error({
-         message: "Error",
-         description: JSON.stringify(d.message),
-       });
-       return;
-     }
-
-     setListUsers(d.data.result);
-     setMeta({
-       page: d.data.meta.page,
-       pageSize: d.data.meta.pageSize,
-       totalPage: d.data.meta.totalPage,
-       pages: d.data.meta.pages,
-     });
+    setListUsers(d.data.result);
+    setMeta({
+      page: d.data.meta.page,
+      pageSize: d.data.meta.pageSize,
+      totalPage: d.data.meta.totalPage,
+      pages: d.data.meta.pages,
+    });
   };
   return (
     <div>
@@ -218,7 +216,7 @@ const UserTable = () => {
       </div>
       <Table
         pagination={{
-          showSizeChanger:true,
+          showSizeChanger: true,
           onChange: (page: number, pageSize: number) =>
             hanldeOnChange(page, pageSize),
           current: meta.page,
